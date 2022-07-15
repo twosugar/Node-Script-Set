@@ -1,0 +1,57 @@
+<!--
+ * @Description: 
+ * @Author: ytang5
+ * @Date: 2022-07-15 16:26:54
+ * @LastEditors: ytang5
+ * @FilePath: /Node-Script-Set/wechat/index.html
+ * @LastEditTime: 2022-07-15 17:44:54
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .chat-content {
+            height: 200px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<script src="https://cdn.socket.io/4.5.0/socket.io.js" crossorigin="anonymous"></script>
+<body>
+    <div class="chat-container">
+        <div class="chat-content"></div>
+        <div class="input-container">
+            <input type="text" class="input-message-box">
+            <button onclick="sendMessage()">发送</button>
+        </div>
+    </div>
+    <script>
+        const socket = io(window.location.origin);
+        const sendMessage = () => {
+            const dom = document.querySelector('.input-message-box')
+            const message = dom.value
+            socket.emit('send-message', message)
+            dom.value = ''
+        }
+        socket.on('update-server', (data) => {
+            const dom = document.querySelector('.chat-content')
+            dom.insertAdjacentHTML(
+                        "beforeend",
+                        "<p>" + data + "</p>"
+                    );
+            const list = dom.childNodes
+            list[list.length - 1].scrollIntoView({block: "end", inline: "nearest"})
+        })
+        socket.on("connect", () => {
+            console.log(socket.connected, socket.id); // x8WIv7-mJelg7on_ALbx
+        });
+        socket.on("disconnect", () => {
+            console.log(socket.connected, socket.id); // undefined
+        });
+    </script>
+</body>
+</html>
